@@ -6,18 +6,26 @@ from django.urls import reverse
 
 from .models import User
 
+
+def check_login(func):
+  def views(request):
+
+    # Authenticated users view their dashbord
+    if request.user.is_authenticated:
+      return render(request, "moneio/index.html")
+    return func(request)
+  return views
+
+
 # Create your views here.
+@check_login
 def index(request):
 
-  # Authenticated users view their dashboard
-  if request.user.is_authenticated:
-    return render(request, "moneio/index.html")
-
-  # Everyone else is prompted to sign in
-  else:
-    return HttpResponseRedirect(reverse("login"))
+  # Everyone is prompted to sign in
+  return HttpResponseRedirect(reverse("login"))
 
 
+@check_login
 def login_view(request):
   if request.method == "POST":
 
@@ -35,10 +43,6 @@ def login_view(request):
         "message": "Invalid username and/or password."
       })
   else:
-
-    # Authenticated users view their dashboard
-    if request.user.is_authenticated:
-      return render(request, "moneio/index.html")
     return render(request, "moneio/login.html")
 
 
@@ -47,6 +51,7 @@ def logout_view(request):
   return HttpResponseRedirect(reverse("index"))
 
 
+@check_login
 def register(request):
   if request.method == "POST":
     username = request.POST["username"]
@@ -71,8 +76,4 @@ def register(request):
     login(request, user)
     return HttpResponseRedirect(reverse("index"))
   else:
-
-    # Authenticated users view their dashboard
-    if request.user.is_authenticated:
-      return render(request, "moneio/index.html")
     return render(request, "moneio/register.html")
