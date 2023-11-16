@@ -8,7 +8,14 @@ from .models import User
 
 # Create your views here.
 def index(request):
-  return render(request, "moneio/index.html")
+
+  # Authenticated users view their dashboard
+  if request.user.is_authenticated:
+    return render(request, "moneio/index.html")
+
+  # Everyone else is prompted to sign in
+  else:
+    return HttpResponseRedirect(reverse("login"))
 
 
 def login_view(request):
@@ -28,6 +35,10 @@ def login_view(request):
         "message": "Invalid username and/or password."
       })
   else:
+
+    # Authenticated users view their dashboard
+    if request.user.is_authenticated:
+      return render(request, "moneio/index.html")
     return render(request, "moneio/login.html")
 
 
@@ -60,4 +71,8 @@ def register(request):
     login(request, user)
     return HttpResponseRedirect(reverse("index"))
   else:
+
+    # Authenticated users view their dashboard
+    if request.user.is_authenticated:
+      return render(request, "moneio/index.html")
     return render(request, "moneio/register.html")
