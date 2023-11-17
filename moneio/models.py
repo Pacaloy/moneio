@@ -17,7 +17,7 @@ class Account(models.Model):
   is_floating = models.BooleanField(default=False)
 
   def __str__(self):
-    return f"{self.user.username} -> {self.name}: {self.initial_balance}"
+    return f"{self.user.username} -> isFloating:{self.is_floating} -> {self.name}: {self.initial_balance}"
   
   def serialize(self):
     return {
@@ -37,7 +37,7 @@ class MoneyInOut(models.Model):
   account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="money_in_out_account")
 
   def __str__(self):
-    return f"{self.user.username} -> {self.account.name} -> {self.name}: {self.price}"
+    return f"{self.user.username} -> isDeductible:{self.is_deductible} -> {self.account.name} -> {self.name}: {self.price}"
   
   def serialize(self):
     return {
