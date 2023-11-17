@@ -1,5 +1,89 @@
 {% extends "moneio/layout.html" %}
 
 {% block body %}
-  <h1>INDEX PAGE</h1>
+  <h1>Dashboard</h1>
+  <button>money in</button>
+  <button>money out</button>
+
+  <!-- Accounts -->
+  <div>
+    <h2>Accounts</h2>
+    <ul class="list-group">
+      {% for account in data.accounts %}
+        {% if not account.is_floating %}
+          <li class="list-group-item">
+            <span>{{ account.name }}</span>
+            <span>{{ account.balance }}</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+      <li class="list-group-item">
+        <span>Total</span>
+        <span>{{ data.current_total_balance }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Floating -->
+  <div>
+    <h2>Floating</h2>
+    <ul class="list-group">
+      {% for account in data.accounts %}
+        {% if account.is_floating %}
+          <li class="list-group-item">
+            <span>{{ account.name }}</span>
+            <span>{{ account.balance }}</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+      <li class="list-group-item">
+        <span>Total</span>
+        <span>{{ data.current_total_floating }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Gross -->
+  <div>
+    <h2>Gross</h2>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span>Total</span>
+        <span>{{ data.current_total_gross }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Deductibles -->
+  <div>
+    <h2>Deductibles</h2>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span>Total</span>
+        <span>{{ data.current_total_deductible }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Net -->
+  <div>
+    <h2>Net</h2>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span>Total</span>
+        <span>{{ data.current_total_net }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Onhand -->
+  <div>
+    <h2>Onhand</h2>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span>Total</span>
+        <span>{{ data.current_total_onhand }}</span>
+      </li>
+    </ul>
+  </div>
 {% endblock %}

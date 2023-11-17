@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Account
+from .models import User, Account, MoneyInOut
 
 
 def check_login(func):
@@ -12,7 +12,46 @@ def check_login(func):
 
     # Authenticated users view their dashbord
     if request.user.is_authenticated:
-      return render(request, "moneio/index.html")
+      accounts = Account.objects.filter(user=request.user)
+      breakdowns = MoneyInOut.objects.filter(user=request.user)
+      accounts = [account.serialize() for account in accounts]
+      breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+
+      # Calculate current balance for each account
+      for breakdown in breakdowns:
+        for account in accounts:
+          if account["name"] == breakdown["account"] and not breakdown["is_deductible"]:
+            account["balance"] += breakdown["price"]
+
+      # Calculate current overall total balances
+      current_total_balance = 0
+      current_total_floating = 0
+      current_total_deductibles = 0
+      for account in accounts:
+        if account["is_floating"]:
+          current_total_floating += account["balance"]
+        else:
+          current_total_balance += account["balance"]
+      for breakdown in breakdowns:
+        if breakdown["is_deductible"]:
+          current_total_deductibles += breakdown["price"]
+
+      # Calculate current total gross, net, and on hand
+      current_total_gross = current_total_balance - current_total_floating
+      current_total_net = current_total_gross - current_total_deductibles
+      current_total_onhand = current_total_net - current_total_floating
+      return render(request, "moneio/index.html", {
+        "data": {
+          "accounts": accounts,
+          "breakdowns": breakdowns,
+          "current_total_balance": current_total_balance,
+          "current_total_floating": current_total_floating,
+          "current_total_gross": current_total_gross,
+          "current_total_deductible": current_total_deductibles,
+          "current_total_net": current_total_net,
+          "current_total_onhand": current_total_onhand,
+        },
+      })
     return func(request)
   return views
 
