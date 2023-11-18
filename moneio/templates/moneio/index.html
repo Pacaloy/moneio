@@ -2,129 +2,139 @@
 {% load static %}
 
 {% block body %}
-  <div>
-    <button id="moneyInBtn">Money In</button>
-    <button id="moneyOutBtn">Money Out</button>
-  </div>
-
-  <div>
-    <button id="dashboardBtn">Dashboard</button>
-    <button id="breakdownBtn">Breakdown</button>
-  </div>
-
-  <!-- Dashboard View-->
-  <div id="dashboardView">
-
-    <!-- Accounts -->
+  <!-- Default View -->
+  <div id="defaultView">
     <div>
-      <h2>Accounts</h2>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <button id="addAccountBtn">Add Account</button>
-        </li>
-        {% for account in data.accounts %}
-          {% if not account.is_floating %}
-            <li class="list-group-item">
-              <span>{{ account.name }}</span>
-              <span>{{ account.balance }}</span>
-            </li>
-          {% endif %}
-        {% endfor %}
-        <li class="list-group-item">
-          <span>Total</span>
-          <span>{{ data.current_total_balance }}</span>
-        </li>
-      </ul>
+      <button id="moneyInBtn">Money In</button>
+      <button id="moneyOutBtn">Money Out</button>
     </div>
   
-    <!-- Floating -->
     <div>
-      <h2>Floating</h2>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <button id="addFloatingBtn">Add Floating</button>
-        </li>
-        {% for account in data.accounts %}
-          {% if account.is_floating %}
-            <li class="list-group-item">
-              <span>{{ account.name }}</span>
-              <span>{{ account.balance }}</span>
-            </li>
-          {% endif %}
-        {% endfor %}
-        <li class="list-group-item">
-          <span>Total</span>
-          <span>{{ data.current_total_floating }}</span>
-        </li>
-      </ul>
+      <button id="dashboardBtn">Dashboard</button>
+      <button id="breakdownBtn">Breakdown</button>
     </div>
   
-    <!-- Gross -->
-    <div>
-      <h2>Gross</h2>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <span>Total</span>
-          <span>{{ data.current_total_gross }}</span>
-        </li>
-      </ul>
-    </div>
+    <!-- Dashboard View-->
+    <div id="dashboardView">
   
-    <!-- Deductibles -->
-    <div>
-      <h2>Deductibles</h2>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <span>Total</span>
-          <span>{{ data.current_total_deductible }}</span>
-        </li>
-      </ul>
-    </div>
-  
-    <!-- Net -->
-    <div>
-      <h2>Net</h2>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <span>Total</span>
-          <span>{{ data.current_total_net }}</span>
-        </li>
-      </ul>
-    </div>
-  
-    <!-- Onhand -->
-    <div>
-      <h2>Onhand</h2>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <span>Total</span>
-          <span>{{ data.current_total_onhand }}</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Breakdown View-->
-  <div id="breakdownView">
-
-    <!-- Breakdown -->
-    <div>
-      <h2>Breakdown</h2>
-      <ul class="list-group">
-        {% for breakdown in data.breakdowns %}
+      <!-- Accounts -->
+      <div>
+        <h2>Accounts</h2>
+        <ul class="list-group">
           <li class="list-group-item">
-            <span>{{ breakdown.account }}</span>
-            <span>{{ breakdown.name }}</span>
-            <span>{{ breakdown.price }}</span>
-            <span></span>
+            <button id="addAccountBtn">Add Account</button>
           </li>
-        {% empty %}
+          {% for account in data.accounts %}
+            {% if not account.is_floating %}
+              <li class="list-group-item">
+                <span>{{ account.name }}</span>
+                <span>{{ account.balance }}</span>
+              </li>
+            {% endif %}
+          {% endfor %}
           <li class="list-group-item">
-            <span>empty</span>
+            <span>Total</span>
+            <span>{{ data.current_total_balance }}</span>
           </li>
-        {% endfor %}
-      </ul>
+        </ul>
+      </div>
+    
+      <!-- Floating -->
+      <div>
+        <h2>Floating</h2>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <button id="addFloatingBtn">Add Floating</button>
+          </li>
+          {% for account in data.accounts %}
+            {% if account.is_floating %}
+              <li class="list-group-item">
+                <span>{{ account.name }}</span>
+                <span>{{ account.balance }}</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+          <li class="list-group-item">
+            <span>Total</span>
+            <span>{{ data.current_total_floating }}</span>
+          </li>
+        </ul>
+      </div>
+    
+      <!-- Gross -->
+      <div>
+        <h2>Gross</h2>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span>Total</span>
+            <span>{{ data.current_total_gross }}</span>
+          </li>
+        </ul>
+      </div>
+    
+      <!-- Deductibles -->
+      <div>
+        <h2>Deductibles</h2>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span>Total</span>
+            <span>{{ data.current_total_deductible }}</span>
+          </li>
+        </ul>
+      </div>
+    
+      <!-- Net -->
+      <div>
+        <h2>Net</h2>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span>Total</span>
+            <span>{{ data.current_total_net }}</span>
+          </li>
+        </ul>
+      </div>
+    
+      <!-- Onhand -->
+      <div>
+        <h2>Onhand</h2>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span>Total</span>
+            <span>{{ data.current_total_onhand }}</span>
+          </li>
+        </ul>
+      </div>
     </div>
+  
+    <!-- Breakdown View-->
+    <div id="breakdownView">
+  
+      <!-- Breakdown -->
+      <div>
+        <h2>Breakdown</h2>
+        <ul class="list-group">
+          {% for breakdown in data.breakdowns %}
+            <li class="list-group-item">
+              <span>{{ breakdown.account }}</span>
+              <span>{{ breakdown.name }}</span>
+              <span>{{ breakdown.price }}</span>
+              <span></span>
+            </li>
+          {% empty %}
+            <li class="list-group-item">
+              <span>empty</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Money In/ Money Out View -->
+  <div id="moneioView">
+    <h2>Moneio View</h2>
+    <button id="closeMoneioViewBtn">Close</button>
   </div>
 {% endblock %}
 
