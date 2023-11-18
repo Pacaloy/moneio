@@ -1,8 +1,10 @@
+import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Account, MoneyInOut
 
@@ -116,3 +118,22 @@ def register(request):
     return HttpResponseRedirect(reverse("index"))
   else:
     return render(request, "moneio/register.html")
+
+
+@csrf_exempt
+@login_required
+def account(request):
+
+  # Add account
+  if request.method == "POST":
+    data = json.loads(request.body)
+    new_account = Account(
+      user = request.user,
+      name = data.get("name"),
+      initial_balance = data.get("balance"),
+      initial_balance_date = data.get("date"),
+      is_floating = data.get("isFloating"),
+    )
+    new_account.save()
+    return HttpResponse(status=204)
+  return HttpResponseRedirect(reverse("index"))

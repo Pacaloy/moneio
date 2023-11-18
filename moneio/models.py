@@ -14,7 +14,7 @@ class Account(models.Model):
   name = models.CharField(max_length=255)
   initial_balance = models.DecimalField(max_digits=12, decimal_places=2)
   initial_balance_date = models.DateField()
-  is_floating = models.BooleanField(default=False)
+  is_floating = models.BooleanField()
 
   def __str__(self):
     return f"{self.user.username} -> isFloating:{self.is_floating} -> {self.name}: {self.initial_balance}"

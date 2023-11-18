@@ -118,6 +118,7 @@
               <span>{{ breakdown.account }}</span>
               <span>{{ breakdown.name }}</span>
               <span>{{ breakdown.price }}</span>
+              <span>{{ breakdown.date }}</span>
               <span></span>
             </li>
           {% empty %}
@@ -130,11 +131,33 @@
     </div>
   </div>
 
+  <!-- Add Account View -->
+  <div id="addAccountView">
+    <h2>Add Account View</h2>
+    <form id="form-account">
+      <div>
+        <button id="cancelAddAccountViewBtn">Cancel</button>
+        <button type="submit">Confirm</button>
+      </div>
+      <div>
+        <label for="formAccountName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="formAccountName" required>
+      </div>
+      <div>
+        <label for="formAccountInitialBalance" class="form-label">Initial Balance</label>
+        <input type="number" class="form-control" id="formAccountInitialBalance" required>
+      </div>
+      <div>
+        <label for="formAccountDate">Date</label>
+        <input type="date" class="form-control" id="formAccountDate" required>
+      </div>
+    </form>
+  </div>
 
   <!-- Money In/ Money Out View -->
   <div id="moneioView">
     <h2>Moneio View</h2>
-    <button id="closeMoneioViewBtn">Close</button>
+    <button id="cancelMoneioViewBtn">Cancel</button>
   </div>
 {% endblock %}
 
