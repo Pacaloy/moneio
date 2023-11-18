@@ -86,4 +86,23 @@
       </li>
     </ul>
   </div>
+
+  <!-- Breakdown -->
+  <div>
+    <h2>Breakdown</h2>
+    <ul class="list-group">
+      {% for breakdown in data.breakdowns %}
+        <li class="list-group-item">
+          <span>{{ breakdown.account }}</span>
+          <span>{{ breakdown.name }}</span>
+          <span>{{ breakdown.price }}</span>
+          <span></span>
+        </li>
+      {% empty %}
+        <li class="list-group-item">
+          <span>empty</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 {% endblock %}
