@@ -39,7 +39,7 @@ def check_login(func):
           current_total_deductibles += breakdown["price"]
 
       # Calculate current total gross, net, and on hand
-      current_total_gross = current_total_balance - current_total_floating
+      current_total_gross = current_total_balance + current_total_floating
       current_total_net = current_total_gross - current_total_deductibles
       current_total_onhand = current_total_net - current_total_floating
       return render(request, "moneio/index.html", {
