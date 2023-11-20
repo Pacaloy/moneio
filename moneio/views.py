@@ -14,8 +14,8 @@ def check_login(func):
 
     # Authenticated users view their dashbord
     if request.user.is_authenticated:
-      accounts = Account.objects.filter(user=request.user)
-      breakdowns = MoneyInOut.objects.filter(user=request.user)
+      accounts = Account.objects.filter(user = request.user)
+      breakdowns = MoneyInOut.objects.filter(user = request.user)
       accounts = [account.serialize() for account in accounts]
       breakdowns = [breakdown.serialize() for breakdown in breakdowns]
 
@@ -38,6 +38,15 @@ def check_login(func):
         if breakdown["is_deductible"]:
           current_total_deductibles += breakdown["price"]
 
+      # Separate deductibles from normal breakdowns
+      breakdowns_normal = []
+      breakdowns_deductibles = []
+      for breakdown in breakdowns:
+        if breakdown["is_deductible"]:
+          breakdowns_deductibles.append(breakdown)
+        else:
+          breakdowns_normal.append(breakdown)
+
       # Calculate current total gross, net, and on hand
       current_total_gross = current_total_balance + current_total_floating
       current_total_net = current_total_gross - current_total_deductibles
@@ -45,7 +54,8 @@ def check_login(func):
       return render(request, "moneio/index.html", {
         "data": {
           "accounts": accounts,
-          "breakdowns": breakdowns,
+          "breakdowns_normal": breakdowns_normal,
+          "breakdowns_deductibles": breakdowns_deductibles,
           "current_total_balance": current_total_balance,
           "current_total_floating": current_total_floating,
           "current_total_gross": current_total_gross,
@@ -136,4 +146,28 @@ def account(request):
     )
     new_account.save()
     return HttpResponse(status=204)
+  return HttpResponseRedirect(reverse("index"))
+
+
+@csrf_exempt
+@login_required
+def moneio(request):
+
+  # Add money in/money out
+  if request.method == "POST":
+    data = json.loads(request.body)
+    signed_price = float(data.get("money"))
+
+    # Convert if money out to negative value
+    if not data.get("isMoneyIn"):
+      signed_price = signed_price * (-1)
+    new_breakdown = MoneyInOut(
+      user = request.user,
+      name = data.get("name"),
+      price = signed_price,
+      date = data.get("date"),
+      is_deductible = False,
+      account = Account.objects.get(user = request.user, name = data.get("account"))
+    )
+    new_breakdown.save()
   return HttpResponseRedirect(reverse("index"))

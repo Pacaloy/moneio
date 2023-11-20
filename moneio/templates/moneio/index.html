@@ -113,7 +113,7 @@
       <div>
         <h2>Breakdown</h2>
         <ul class="list-group">
-          {% for breakdown in data.breakdowns %}
+          {% for breakdown in data.breakdowns_normals %}
             <li class="list-group-item">
               <span>{{ breakdown.account }}</span>
               <span>{{ breakdown.name }}</span>
@@ -145,10 +145,10 @@
       </div>
       <div>
         <label for="formAccountInitialBalance" class="form-label">Initial Balance</label>
-        <input type="number" class="form-control" id="formAccountInitialBalance" step="0.01" required>
+        <input type="number" class="form-control" id="formAccountInitialBalance" min="0" step="0.01" required>
       </div>
       <div>
-        <label for="formAccountDate">Date</label>
+        <label for="formAccountDate" class="form-label">Date</label>
         <input type="date" class="form-control" id="formAccountDate" required>
       </div>
     </form>
@@ -157,7 +157,32 @@
   <!-- Money In/ Money Out View -->
   <div id="moneioView">
     <h2>Moneio View</h2>
-    <button id="cancelMoneioViewBtn">Cancel</button>
+    <form id="form-moneio">
+      <div>
+        <button type="button" id="cancelMoneioViewBtn">Cancel</button>
+        <button type="submit">Confirm</button>
+      </div>
+      <div>
+        <label for="formMoneioName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="formMoneioName" required>
+      </div>
+      <div>
+        <label id="moneioMoneyLabel" for="formMoneioMoney" class="form-label"></label>
+        <input type="number" class="form-control" id="formMoneioMoney" min="0" step="0.01" required>
+      </div>
+      <div>
+        <label for="formMoneioAccount" class="form-label">Account</label>
+        <select type="text" class="form-select" id="formMoneioAccount" required>
+          {% for account in data.accounts %}
+            <option>{{ account.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="formMoneioDate" class="form-label">Date</label>
+        <input type="date" class="form-control" id="formMoneioDate" required>
+      </div>
+    </form>
   </div>
 {% endblock %}
 

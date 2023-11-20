@@ -10,4 +10,5 @@ urlpatterns = [
 
   # API Routes
   path("account", views.account, name="account"),
+  path("moneio", views.moneio, name="moneio"),
 ]

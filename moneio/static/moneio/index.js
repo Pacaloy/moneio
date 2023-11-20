@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('#moneyInBtn').onclick = loadMoneio;
-  document.querySelector('#moneyOutBtn').onclick = loadMoneio;
+  document.querySelector('#moneyInBtn').onclick = () => loadMoneio(true);
+  document.querySelector('#moneyOutBtn').onclick = () => loadMoneio(false);
 
   // Use buttons to toggle between views
   document.querySelector('#dashboardBtn').onclick = loadDashboard;
@@ -54,14 +54,25 @@ function loadAddAccount(isFloating) {
         isFloating: isFloating,
       }),
     })
-    .then(() => window.location.reload());
+    .then(() => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 300)
+    });
 
     return false;
   };
 }
 
-function loadMoneio() {
+function loadMoneio(isMoneyIn) {
   
+  // Money label
+  if (isMoneyIn) {
+    document.querySelector('#moneioMoneyLabel').innerHTML = 'Money In'
+  } else {
+    document.querySelector('#moneioMoneyLabel').innerHTML = 'Money Out'
+  }
+
   // View moneio view and hide default view
   document.querySelector('#defaultView').style.display = 'none';
   document.querySelector('#moneioView').style.display = 'block';
@@ -70,5 +81,28 @@ function loadMoneio() {
   document.querySelector('#cancelMoneioViewBtn').onclick = () => {
     document.querySelector('#defaultView').style.display = 'block';
     document.querySelector('#moneioView').style.display = 'none';
+  };
+
+  // Confirm to add/minus money to an account
+  document.querySelector('#form-moneio').onsubmit = () => {
+
+    // Add money in/money out
+    fetch('/moneio', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: document.querySelector('#formMoneioName').value,
+        money: document.querySelector('#formMoneioMoney').value,
+        account: document.querySelector('#formMoneioAccount').value,
+        date: document.querySelector('#formMoneioDate').value,
+        isMoneyIn: isMoneyIn,
+      }),
+    })
+    .then(() => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 300)
+    });
+
+    return false;
   };
 }
