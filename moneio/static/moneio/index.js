@@ -20,6 +20,7 @@ function loadDashboard() {
 
   document.querySelector('#addAccountBtn').onclick = () => loadAddAccount(false);
   document.querySelector('#addFloatingBtn').onclick = () => loadAddAccount(true);
+  document.querySelector('#addDeductiblesBtn').onclick = () => loadAddAccount(true, true);
 }
 
 function loadBreakdown() {
@@ -29,7 +30,7 @@ function loadBreakdown() {
   document.querySelector('#breakdownView').style.display = 'block';
 }
 
-function loadAddAccount(isFloating) {
+function loadAddAccount(isFloating = false, isDeductibles = false) {
 
   // View add account view and hide default view
   document.querySelector('#defaultView').style.display = 'none';
@@ -49,7 +50,7 @@ function loadAddAccount(isFloating) {
       method: 'POST',
       body: JSON.stringify({
         name: document.querySelector('#formAccountName').value,
-        balance: document.querySelector('#formAccountInitialBalance').value,
+        balance: `${isDeductibles ? '-' : ''}${document.querySelector('#formAccountInitialBalance').value}`,
         date: document.querySelector('#formAccountDate').value,
         isFloating: isFloating,
       }),

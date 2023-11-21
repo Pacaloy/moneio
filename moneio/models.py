@@ -33,11 +33,10 @@ class MoneyInOut(models.Model):
   name = models.CharField(max_length=255)
   price = models.DecimalField(max_digits=12, decimal_places=2)
   date = models.DateField()
-  is_deductible = models.BooleanField()
   account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="money_in_out_account")
 
   def __str__(self):
-    return f"{self.user.username} -> isDeductible:{self.is_deductible} -> {self.account.name} -> {self.name}: {self.price}"
+    return f"{self.user.username} -> {self.account.name} -> {self.name}: {self.price}"
   
   def serialize(self):
     return {
@@ -45,5 +44,4 @@ class MoneyInOut(models.Model):
       "price": self.price,
       "date": self.date.strftime("%e %B %Y"),
       "account": self.account.name,
-      "is_deductible": self.is_deductible,
     }

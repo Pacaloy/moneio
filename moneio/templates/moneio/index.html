@@ -44,10 +44,10 @@
         <h2>Floating</h2>
         <ul class="list-group">
           <li class="list-group-item">
-            <button id="addFloatingBtn">Add Floating</button>
+            <button id="addFloatingBtn">Add Floating Account</button>
           </li>
           {% for account in data.accounts %}
-            {% if account.is_floating %}
+            {% if account.is_floating and account.balance >= 0 %}
               <li class="list-group-item">
                 <span>{{ account.name }}</span>
                 <span>{{ account.balance }}</span>
@@ -77,8 +77,19 @@
         <h2>Deductibles</h2>
         <ul class="list-group">
           <li class="list-group-item">
+            <button id="addDeductiblesBtn">Add Deductibles Account</button>
+          </li>
+          {% for account in data.accounts %}
+            {% if account.is_floating and account.balance < 0 %}
+              <li class="list-group-item">
+                <span>{{ account.name }}</span>
+                <span>{% widthratio account.balance 1 -1 %}</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+          <li class="list-group-item">
             <span>Total</span>
-            <span>{{ data.current_total_deductible }}</span>
+            <span>{{ data.current_total_deductibles }}</span>
           </li>
         </ul>
       </div>
@@ -113,7 +124,7 @@
       <div>
         <h2>Breakdown</h2>
         <ul class="list-group">
-          {% for breakdown in data.breakdowns_normals %}
+          {% for breakdown in data.breakdowns %}
             <li class="list-group-item">
               <span>{{ breakdown.account }}</span>
               <span>{{ breakdown.name }}</span>

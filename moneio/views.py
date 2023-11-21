@@ -9,10 +9,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User, Account, MoneyInOut
 
 
-def check_login(func):
+def authenticate_index(func):
   def views(request):
 
-    # Authenticated users view their dashbord
+    # Authenticated users view their dashboard
     if request.user.is_authenticated:
       accounts = Account.objects.filter(user = request.user)
       breakdowns = MoneyInOut.objects.filter(user = request.user)
@@ -22,7 +22,7 @@ def check_login(func):
       # Calculate current balance for each account
       for breakdown in breakdowns:
         for account in accounts:
-          if account["name"] == breakdown["account"] and not breakdown["is_deductible"]:
+          if account["name"] == breakdown["account"]:
             account["balance"] += breakdown["price"]
 
       # Calculate current overall total balances
@@ -31,21 +31,15 @@ def check_login(func):
       current_total_deductibles = 0
       for account in accounts:
         if account["is_floating"]:
-          current_total_floating += account["balance"]
+          if account["balance"] >= 0:
+            current_total_floating += account["balance"]
+          else:
+            current_total_deductibles += account["balance"]
         else:
           current_total_balance += account["balance"]
-      for breakdown in breakdowns:
-        if breakdown["is_deductible"]:
-          current_total_deductibles += breakdown["price"]
 
-      # Separate deductibles from normal breakdowns
-      breakdowns_normal = []
-      breakdowns_deductibles = []
-      for breakdown in breakdowns:
-        if breakdown["is_deductible"]:
-          breakdowns_deductibles.append(breakdown)
-        else:
-          breakdowns_normal.append(breakdown)
+      # Convert deductibles to positive for display
+      current_total_deductibles = current_total_deductibles * (-1)
 
       # Calculate current total gross, net, and on hand
       current_total_gross = current_total_balance + current_total_floating
@@ -54,12 +48,11 @@ def check_login(func):
       return render(request, "moneio/index.html", {
         "data": {
           "accounts": accounts,
-          "breakdowns_normal": breakdowns_normal,
-          "breakdowns_deductibles": breakdowns_deductibles,
+          "breakdowns": breakdowns,
           "current_total_balance": current_total_balance,
           "current_total_floating": current_total_floating,
           "current_total_gross": current_total_gross,
-          "current_total_deductible": current_total_deductibles,
+          "current_total_deductibles": current_total_deductibles,
           "current_total_net": current_total_net,
           "current_total_onhand": current_total_onhand,
         },
@@ -69,14 +62,14 @@ def check_login(func):
 
 
 # Create your views here.
-@check_login
+@authenticate_index
 def index(request):
 
   # Everyone is prompted to sign in
   return HttpResponseRedirect(reverse("login"))
 
 
-@check_login
+@authenticate_index
 def login_view(request):
   if request.method == "POST":
 
@@ -102,7 +95,7 @@ def logout_view(request):
   return HttpResponseRedirect(reverse("index"))
 
 
-@check_login
+@authenticate_index
 def register(request):
   if request.method == "POST":
     username = request.POST["username"]
@@ -166,7 +159,6 @@ def moneio(request):
       name = data.get("name"),
       price = signed_price,
       date = data.get("date"),
-      is_deductible = False,
       account = Account.objects.get(user = request.user, name = data.get("account"))
     )
     new_breakdown.save()
