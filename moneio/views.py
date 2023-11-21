@@ -130,6 +130,8 @@ def account(request):
   # Add account
   if request.method == "POST":
     data = json.loads(request.body)
+
+    # Add new account
     new_account = Account(
       user = request.user,
       name = data.get("name"),
@@ -154,6 +156,8 @@ def moneio(request):
     # Convert if money out to negative value
     if not data.get("isMoneyIn"):
       signed_price = signed_price * (-1)
+
+    # Add new money in/money out
     new_breakdown = MoneyInOut(
       user = request.user,
       name = data.get("name"),
