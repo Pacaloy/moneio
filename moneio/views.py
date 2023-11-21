@@ -14,6 +14,8 @@ def authenticate_index(func):
 
     # Authenticated users view their dashboard
     if request.user.is_authenticated:
+
+      # Get list of user's accounts and money in/money out
       accounts = Account.objects.filter(user = request.user)
       breakdowns = MoneyInOut.objects.filter(user = request.user)
       accounts = [account.serialize() for account in accounts]
@@ -151,11 +153,29 @@ def moneio(request):
   # Add money in/money out
   if request.method == "POST":
     data = json.loads(request.body)
+    account_name = data.get("account")
     signed_price = float(data.get("money"))
 
     # Convert if money out to negative value
     if not data.get("isMoneyIn"):
       signed_price = signed_price * (-1)
+
+    # Get list of user's accounts and money in/money out
+    accounts = Account.objects.filter(user = request.user)
+    breakdowns = MoneyInOut.objects.filter(user = request.user)
+    accounts = [account.serialize() for account in accounts]
+    breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+
+    # Calculate current balance for each account
+    for breakdown in breakdowns:
+      for account in accounts:
+        if account["name"] == breakdown["account"]:
+          account["balance"] += breakdown["price"]
+
+    # Reverse sign if account chosen is a deductibles account
+    for account in accounts:
+      if account["name"] == account_name and account["is_floating"] and account["balance"] < 0:
+        signed_price = signed_price * (-1)
 
     # Add new money in/money out
     new_breakdown = MoneyInOut(
@@ -163,7 +183,7 @@ def moneio(request):
       name = data.get("name"),
       price = signed_price,
       date = data.get("date"),
-      account = Account.objects.get(user = request.user, name = data.get("account"))
+      account = Account.objects.get(user = request.user, name = account_name)
     )
     new_breakdown.save()
   return HttpResponseRedirect(reverse("index"))
