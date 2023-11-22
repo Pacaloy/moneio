@@ -15,9 +15,9 @@ def authenticate_index(func):
     # Authenticated users view their dashboard
     if request.user.is_authenticated:
 
-      # Get list of user's accounts and money in/money out
-      accounts = Account.objects.filter(user = request.user)
-      breakdowns = MoneyInOut.objects.filter(user = request.user)
+      # Get list of user's accounts alphabetically and money in/money out reverse chronologically
+      accounts = Account.objects.filter(user = request.user).order_by("name")
+      breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
       accounts = [account.serialize() for account in accounts]
       breakdowns = [breakdown.serialize() for breakdown in breakdowns]
 
