@@ -17,10 +17,11 @@ class Account(models.Model):
   is_floating = models.BooleanField()
 
   def __str__(self):
-    return f"{self.user.username} -> isFloating:{self.is_floating} -> {self.name}: {self.initial_balance}"
+    return f"{self.id}: {self.user.username} -> isFloating:{self.is_floating} -> {self.name}: {self.initial_balance}"
   
   def serialize(self):
     return {
+      "id": self.id,
       "name": self.name,
       "balance": self.initial_balance,
       "date": self.initial_balance_date.strftime("%e %B %Y"),
@@ -36,10 +37,11 @@ class MoneyInOut(models.Model):
   account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="money_in_out_account")
 
   def __str__(self):
-    return f"{self.user.username} -> {self.account.name} -> {self.name}: {self.price}"
+    return f"{self.id}: {self.user.username} -> {self.account.name} -> {self.name}: {self.price}"
   
   def serialize(self):
     return {
+      "id": self.id,
       "name": self.name,
       "price": self.price,
       "date": self.date.strftime("%e %B %Y"),

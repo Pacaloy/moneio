@@ -27,8 +27,11 @@
           {% for account in data.accounts %}
             {% if not account.is_floating %}
               <li class="list-group-item">
-                <span>{{ account.name }}</span>
-                <span>{{ account.balance }}</span>
+                <!-- <a href="/{{ request.user.username }}/account/{{ account.id }}"> -->
+                <a href="{% url 'edit_account' request.user.username account.id %}">
+                  <span>{{ account.name }}</span>
+                  <span>{{ account.balance }}</span>
+                </a>
               </li>
             {% endif %}
           {% endfor %}
@@ -49,8 +52,11 @@
           {% for account in data.accounts %}
             {% if account.is_floating and account.balance >= 0 %}
               <li class="list-group-item">
-                <span>{{ account.name }}</span>
-                <span>{{ account.balance }}</span>
+                <!-- <a href="/{{ request.user.username }}/account/{{ account.id }}"> -->
+                <a href="{% url 'edit_account' request.user.username account.id %}">
+                  <span>{{ account.name }}</span>
+                  <span>{{ account.balance }}</span>
+                </a>
               </li>
             {% endif %}
           {% endfor %}
@@ -82,8 +88,11 @@
           {% for account in data.accounts %}
             {% if account.is_floating and account.balance < 0 %}
               <li class="list-group-item">
-                <span>{{ account.name }}</span>
-                <span>{% widthratio account.balance 1 -1 %}</span>
+                <!-- <a href="/{{ request.user.username }}/account/{{ account.id }}"> -->
+                <a href="{% url 'edit_account_deductibles' request.user.username account.id %}">
+                  <span>{{ account.name }}</span>
+                  <span>{% widthratio account.balance 1 -1 %}</span>
+                </a>
               </li>
             {% endif %}
           {% endfor %}

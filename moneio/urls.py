@@ -10,5 +10,7 @@ urlpatterns = [
 
   # API Routes
   path("account", views.account, name="account"),
+  path("<str:username>/account/<int:account_id>", views.edit_account, name="edit_account"),
+  path("<str:username>/account_deductibles/<int:account_id>", views.edit_account_deductibles, name="edit_account_deductibles"),
   path("moneio", views.moneio, name="moneio"),
 ]
