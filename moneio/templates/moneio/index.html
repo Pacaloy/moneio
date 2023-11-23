@@ -11,7 +11,7 @@
   
     <div>
       <button id="dashboardBtn">Dashboard</button>
-      <button id="breakdownBtn">Breakdown</button>
+      <button id="breakdownBtn">Transactions</button>
     </div>
   
     <!-- Dashboard View-->
@@ -131,7 +131,7 @@
   
       <!-- Breakdown -->
       <div>
-        <h2>Breakdown</h2>
+        <h2>Transactions</h2>
         <ul class="list-group">
           {% for breakdown in data.breakdowns %}
             <li class="list-group-item">
@@ -194,7 +194,13 @@
         <label for="formMoneioAccount" class="form-label">Account</label>
         <select type="text" class="form-select" id="formMoneioAccount" required>
           {% for account in data.accounts %}
-            <option>{{ account.name }}</option>
+            {% if not account.is_floating %}
+              <option value="{{ account.name }}">{{ account.name }} (account)</option>
+            {% elif account.is_floating and account.balance >= 0 %}
+              <option value="{{ account.name }}">{{ account.name }} (floating)</option>
+            {% else %}
+              <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
+            {% endif %}
           {% endfor %}
         </select>
       </div>
