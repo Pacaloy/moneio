@@ -186,6 +186,7 @@ def moneio(request):
       account = Account.objects.get(user = request.user, name = account_name)
     )
     new_breakdown.save()
+    return HttpResponse(status=204)
   return HttpResponseRedirect(reverse("index"))
 
 
