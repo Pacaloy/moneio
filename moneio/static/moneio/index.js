@@ -6,11 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#dashboardBtn').onclick = loadDashboard;
   document.querySelector('#breakdownBtn').onclick = loadBreakdown;
 
-  // By default, load the dashboard
-  loadDashboard();
+  if (sessionStorage.getItem('display') === 'transactions') {
+    loadBreakdown();
+  } else {
+    // By default, load the dashboard
+    loadDashboard();
+  }
 });
 
 function loadDashboard() {
+  sessionStorage.setItem('display', 'dashboard');
 
   // View dashboard and hide breakdown
   document.querySelector('#dashboardView').style.display = 'block';
@@ -24,10 +29,13 @@ function loadDashboard() {
 }
 
 function loadBreakdown() {
+  sessionStorage.setItem('display', 'transactions');
 
   // View breakdown and hide dashboard
   document.querySelector('#dashboardView').style.display = 'none';
   document.querySelector('#breakdownView').style.display = 'block';
+  document.querySelector('#addAccountView').style.display = 'none';
+  document.querySelector('#moneioView').style.display = 'none';
 }
 
 function loadAddAccount(isFloating = false, isDeductibles = false) {
