@@ -42,6 +42,9 @@ function loadAddAccount(isFloating = false, isDeductibles = false) {
     document.querySelector('#addAccountView').style.display = 'none';
   };
 
+  // Assign default date today
+  document.querySelector('#formAccountDate').value = getFormattedDateToday();
+
   // Confirm button to add account
   document.querySelector('#form-account').onsubmit = () => {
     
@@ -84,6 +87,9 @@ function loadMoneio(isMoneyIn) {
     document.querySelector('#moneioView').style.display = 'none';
   };
 
+  // Assign default date today
+  document.querySelector('#formMoneioDate').value = getFormattedDateToday();
+
   // Confirm to add/minus money to an account
   document.querySelector('#form-moneio').onsubmit = () => {
 
@@ -106,4 +112,16 @@ function loadMoneio(isMoneyIn) {
 
     return false;
   };
+}
+
+function getFormattedDateToday() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  let mm = today.getMonth() + 1; // Months start at 0!
+  let dd = today.getDate();
+  
+  if (dd < 10) dd = '0' + dd;
+  if (mm < 10) mm = '0' + mm;
+
+  return yyyy + '-' + mm + '-' + dd;
 }
