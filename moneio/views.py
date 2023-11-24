@@ -142,7 +142,7 @@ def account(request):
       is_floating = data.get("isFloating"),
     )
     new_account.save()
-    return HttpResponse(status=204)
+    return HttpResponse(status = 204)
   return HttpResponseRedirect(reverse("index"))
 
 
@@ -186,7 +186,7 @@ def moneio(request):
       account = Account.objects.get(user = request.user, name = account_name)
     )
     new_breakdown.save()
-    return HttpResponse(status=204)
+    return HttpResponse(status = 204)
   return HttpResponseRedirect(reverse("index"))
 
 
@@ -210,12 +210,12 @@ def edit_account(request, username, account_id):
     account[0].initial_balance = data.get("balance")
     account[0].initial_balance_date = data.get("date")
     account[0].save()
-    return HttpResponse(status=204)
+    return HttpResponse(status = 204)
 
   # Delete account
   if request.method == "DELETE":
     account.delete()
-    return HttpResponse(status=204)
+    return HttpResponse(status = 204)
   return render(request, "moneio/account.html", {
     "account": account[0],
     "date": account[0].initial_balance_date.strftime("%Y-%m-%d"),
@@ -242,14 +242,132 @@ def edit_account_deductibles(request, username, account_id):
     account[0].initial_balance = float(data.get("balance")) * (-1) # Convert to negative for storing value in deductibles
     account[0].initial_balance_date = data.get("date")
     account[0].save()
-    return HttpResponse(status=204)
+    return HttpResponse(status = 204)
 
   # Delete account
   if request.method == "DELETE":
     account.delete()
-    return HttpResponse(status=204)
+    return HttpResponse(status = 204)
   account[0].initial_balance = account[0].initial_balance * (-1) # Convert to positive for display
   return render(request, "moneio/account.html", {
     "account": account[0],
     "date": account[0].initial_balance_date.strftime("%Y-%m-%d"),
+  })
+
+
+@csrf_exempt
+@login_required
+def monei(request, username, monei_id):
+  # Check if param is the current logged in user
+  if (request.user.username != username):
+    return HttpResponseRedirect(reverse("index"))
+  
+  # Check if the logged in user owns the transaction
+  transaction = MoneyInOut.objects.filter(pk = monei_id, user = request.user)
+  if not transaction:
+    return HttpResponseRedirect(reverse("index"))
+
+  # Get list of user's accounts alphabetically and money in/money out reverse chronologically
+  accounts = Account.objects.filter(user = request.user).order_by("name")
+  breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
+  accounts = [account.serialize() for account in accounts]
+  breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+
+  # Calculate current balance for each account
+  for breakdown in breakdowns:
+    for account in accounts:
+      if account["name"] == breakdown["account"]:
+        account["balance"] += breakdown["price"]
+
+  # Edit transaction details
+  if request.method == "PUT":
+    data = json.loads(request.body)
+
+    # Check if account is deductibles and the current account
+    signed_price = float(data.get("price"))
+    for account in accounts:
+      if account["name"] == data.get("account") and account["is_floating"] and account["balance"] < 0 and transaction[0].account.name != data.get("account"):
+        signed_price = signed_price * (-1)
+        break
+    transaction[0].name = data.get("name")
+    transaction[0].price = signed_price
+    transaction[0].date = data.get("date")
+    transaction[0].account = Account.objects.get(user = request.user, name = data.get("account"))
+    transaction[0].save()
+    return HttpResponse(status = 204)
+  
+  # Delete transaction
+  if request.method == "DELETE":
+    transaction[0].delete()
+
+  # Insert current account at the first index of the accounts list
+  for i in range(len(accounts)):
+    if transaction[0].account.name == accounts[i]["name"]:
+      accounts.insert(0, accounts.pop(i))
+      break
+  return render(request, "moneio/moneio.html", {
+    "title": "Money In",
+    "transaction": transaction[0],
+    "price": transaction[0].price,
+    "date": transaction[0].date.strftime("%Y-%m-%d"),
+    "accounts": accounts,
+  })
+
+
+@csrf_exempt
+@login_required
+def moneo(request, username, moneo_id):
+  # Check if param is the current logged in user
+  if (request.user.username != username):
+    return HttpResponseRedirect(reverse("index"))
+  
+  # Check if the logged in user owns the transaction
+  transaction = MoneyInOut.objects.filter(pk = moneo_id, user = request.user)
+  if not transaction:
+    return HttpResponseRedirect(reverse("index"))
+
+  # Get list of user's accounts alphabetically and money in/money out reverse chronologically
+  accounts = Account.objects.filter(user = request.user).order_by("name")
+  breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
+  accounts = [account.serialize() for account in accounts]
+  breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+
+  # Calculate current balance for each account
+  for breakdown in breakdowns:
+    for account in accounts:
+      if account["name"] == breakdown["account"]:
+        account["balance"] += breakdown["price"]
+
+  # Edit transaction details
+  if request.method == "PUT":
+    data = json.loads(request.body)
+
+    # Check if account is deductibles and the current account
+    signed_price = float(data.get("price")) * (-1)
+    for account in accounts:
+      if account["name"] == data.get("account") and account["is_floating"] and account["balance"] < 0 and transaction[0].account.name != data.get("account"):
+        signed_price = signed_price * (-1)
+        break
+    transaction[0].name = data.get("name")
+    transaction[0].price = signed_price
+    transaction[0].date = data.get("date")
+    transaction[0].account = Account.objects.get(user = request.user, name = data.get("account"))
+    transaction[0].save()
+    return HttpResponse(status = 204)
+  
+  # Delete transaction
+  if request.method == "DELETE":
+    transaction[0].delete()
+
+  # Insert current account at the first index of the accounts list
+  for i in range(len(accounts)):
+    if transaction[0].account.name == accounts[i]["name"]:
+      accounts.insert(0, accounts.pop(i))
+      break
+  return render(request, "moneio/moneio.html", {
+    "title": "Money Out",
+    "transaction": transaction[0],
+    "price": transaction[0].price * (-1), # Convert to positive for display
+    "date": transaction[0].date.strftime("%Y-%m-%d"),
+    "accounts": accounts,
   })

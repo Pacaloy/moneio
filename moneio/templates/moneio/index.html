@@ -134,13 +134,25 @@
         <h2>Transactions</h2>
         <ul class="list-group">
           {% for breakdown in data.breakdowns %}
-            <li class="list-group-item">
-              <span>{{ breakdown.account }}</span>
-              <span>{{ breakdown.name }}</span>
-              <span>{{ breakdown.price }}</span>
-              <span>{{ breakdown.date }}</span>
-              <span></span>
-            </li>
+            {% if breakdown.price >= 0 %}
+              <li class="list-group-item bg-success-subtle">
+                <a href="{% url 'monei' request.user.username breakdown.id %}">
+                  <span>{{ breakdown.account }}</span>
+                  <span>{{ breakdown.name }}</span>
+                  <span>{{ breakdown.price }}</span>
+                  <span>{{ breakdown.date }}</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="list-group-item bg-danger-subtle">
+                <a href="{% url 'moneo' request.user.username breakdown.id %}">
+                  <span>{{ breakdown.account }}</span>
+                  <span>{{ breakdown.name }}</span>
+                  <span>{% widthratio breakdown.price 1 -1 %}</span>
+                  <span>{{ breakdown.date }}</span>
+                </a>
+              </li>
+            {% endif %}
           {% empty %}
             <li class="list-group-item">
               <span>empty</span>
@@ -180,7 +192,9 @@
     <form id="form-moneio">
       <div>
         <button type="button" id="cancelMoneioViewBtn">Cancel</button>
-        <button type="submit">Confirm</button>
+        {% if data.accounts %}
+          <button type="submit">Confirm</button>
+        {% endif %}
       </div>
       <div>
         <label for="formMoneioName" class="form-label">Name</label>
@@ -188,21 +202,25 @@
       </div>
       <div>
         <label id="moneioMoneyLabel" for="formMoneioMoney" class="form-label"></label>
-        <input type="number" class="form-control" id="formMoneioMoney" min="0" step="0.01" required>
+        <input type="number" class="form-control" id="formMoneioMoney" min="0.01" step="0.01" required>
       </div>
       <div>
-        <label for="formMoneioAccount" class="form-label">Account</label>
-        <select type="text" class="form-select" id="formMoneioAccount" required>
-          {% for account in data.accounts %}
-            {% if not account.is_floating %}
-              <option value="{{ account.name }}">{{ account.name }} (account)</option>
-            {% elif account.is_floating and account.balance >= 0 %}
-              <option value="{{ account.name }}">{{ account.name }} (floating)</option>
-            {% else %}
-              <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
-            {% endif %}
-          {% endfor %}
-        </select>
+        {% if data.accounts %}
+          <label for="formMoneioAccount" class="form-label">Account</label>
+          <select type="text" class="form-select" id="formMoneioAccount" required>
+            {% for account in data.accounts %}
+              {% if not account.is_floating %}
+                <option value="{{ account.name }}">{{ account.name }} (account)</option>
+              {% elif account.is_floating and account.balance >= 0 %}
+                <option value="{{ account.name }}">{{ account.name }} (floating)</option>
+              {% else %}
+                <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        {% else %}
+          <button type="button" id="createAccountBtn">Create an account</button>
+        {% endif %}
       </div>
       <div>
         <label for="formMoneioDate" class="form-label">Date</label>

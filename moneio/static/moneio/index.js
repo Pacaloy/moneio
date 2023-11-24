@@ -18,6 +18,7 @@ function loadDashboard() {
   sessionStorage.setItem('display', 'dashboard');
 
   // View dashboard and hide breakdown
+  document.querySelector('#defaultView').style.display = 'block';
   document.querySelector('#dashboardView').style.display = 'block';
   document.querySelector('#breakdownView').style.display = 'none';
   document.querySelector('#addAccountView').style.display = 'none';
@@ -94,6 +95,9 @@ function loadMoneio(isMoneyIn) {
     document.querySelector('#defaultView').style.display = 'block';
     document.querySelector('#moneioView').style.display = 'none';
   };
+
+  // Go to dashboard to create new account
+  if (document.querySelector('#createAccountBtn')) document.querySelector('#createAccountBtn').onclick = loadDashboard;
 
   // Assign default date today
   document.querySelector('#formMoneioDate').value = getFormattedDateToday();

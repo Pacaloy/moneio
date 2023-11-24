@@ -1,0 +1,48 @@
+{% extends "moneio/layout.html" %}
+{% load static %}
+
+{% block body %}
+  <h2>Moneio</h2>
+
+  <!-- Edit Moneio View -->
+  <div>
+    <h2>{{ title }}</h2>
+    <form id="form-moneio">
+      <div>
+        <button type="button" id="cancelEditMoneioBtn">Cancel</button>
+        <button type="submit">Save</button>
+        <button type="button" id="deleteMoneioBtn">Delete</button>
+      </div>
+      <div>
+        <label for="formMoneioName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="formMoneioName" value="{{ transaction.name }}" required>
+      </div>
+      <div>
+        <label id="moneioMoneyLabel" for="formMoneioMoney" class="form-label"></label>
+        <input type="number" class="form-control" id="formMoneioMoney" min="0.01" step="0.01" value="{{ price }}" required>
+      </div>
+      <div>
+        <label for="formMoneioAccount" class="form-label">Account</label>
+        <select type="text" class="form-select" id="formMoneioAccount" required>
+          {% for account in accounts %}
+            {% if not account.is_floating %}
+              <option value="{{ account.name }}">{{ account.name }} (account)</option>
+            {% elif account.is_floating and account.balance >= 0 %}
+              <option value="{{ account.name }}">{{ account.name }} (floating)</option>
+            {% else %}
+              <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="formMoneioDate" class="form-label">Date</label>
+        <input type="date" class="form-control" id="formMoneioDate" value="{{ date }}" required>
+      </div>
+    </form>
+  </div>
+{% endblock%}
+
+{% block script %}
+  <script src="{% static 'moneio/moneio.js' %}"></script>
+{% endblock %}
