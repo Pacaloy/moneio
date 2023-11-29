@@ -224,42 +224,6 @@ def edit_account(request, username, account_id):
 
 @csrf_exempt
 @login_required
-def edit_account_deductibles(request, username, account_id):
-
-  # Check if param is the current logged in user
-  if (request.user.username != username):
-    return HttpResponseRedirect(reverse("index"))
-  
-  # Check if the logged in user owns the account
-  account = Account.objects.filter(pk = account_id, user = request.user)
-  if not account:
-    return HttpResponseRedirect(reverse("index"))
-  
-  # Edit account details
-  if request.method == "PUT":
-    data = json.loads(request.body)
-    account[0].name = data.get("name")
-    account[0].initial_balance = float(data.get("balance")) * (-1) # Convert to negative for storing value in deductibles
-    account[0].initial_balance_date = data.get("date")
-    account[0].save()
-    return HttpResponse(status = 204)
-
-  # Delete account
-  if request.method == "DELETE":
-    account.delete()
-    return HttpResponse(status = 204)
-  
-  # Convert to positive for display
-  if account[0].initial_balance < 0:
-    account[0].initial_balance = account[0].initial_balance * (-1)
-  return render(request, "moneio/account.html", {
-    "account": account[0],
-    "date": account[0].initial_balance_date.strftime("%Y-%m-%d"),
-  })
-
-
-@csrf_exempt
-@login_required
 def monei(request, username, monei_id):
   # Check if param is the current logged in user
   if (request.user.username != username):

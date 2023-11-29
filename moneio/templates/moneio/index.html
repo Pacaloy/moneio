@@ -89,7 +89,7 @@
             {% if account.is_floating and account.balance < 0 %}
               <li class="list-group-item">
                 <!-- <a href="/{{ request.user.username }}/account/{{ account.id }}"> -->
-                <a href="{% url 'edit_account_deductibles' request.user.username account.id %}">
+                <a href="{% url 'edit_account' request.user.username account.id %}">
                   <span>{{ account.name }}</span>
                   <span>{% widthratio account.balance 1 -1 %}</span>
                 </a>
