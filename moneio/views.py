@@ -248,7 +248,10 @@ def edit_account_deductibles(request, username, account_id):
   if request.method == "DELETE":
     account.delete()
     return HttpResponse(status = 204)
-  account[0].initial_balance = account[0].initial_balance * (-1) # Convert to positive for display
+  
+  # Convert to positive for display
+  if account[0].initial_balance < 0:
+    account[0].initial_balance = account[0].initial_balance * (-1)
   return render(request, "moneio/account.html", {
     "account": account[0],
     "date": account[0].initial_balance_date.strftime("%Y-%m-%d"),
