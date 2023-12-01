@@ -1,0 +1,64 @@
+{% extends "moneio/layout.html" %}
+{% load static %}
+
+{% block body %}
+  <h2>Moneio</h2>
+
+  <!-- Edit Moneio View -->
+  <div>
+    <h2>Edit Transfer</h2>
+    <form id="form-transfer">
+      <div>
+        <button type="button" id="cancelEditTransferBtn">Cancel</button>
+        <button type="submit">Save</button>
+        <button type="button" id="deleteTransferBtn">Delete</button>
+      </div>
+      <div>
+        <label for="formTransferName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="formTransferName" value="{{ transfer.name }}" required>
+      </div>
+      <div>
+        <label for="formTransferMoney" class="form-label">Amount</label>
+        <input type="number" class="form-control" id="formTransferMoney" min="0.01" step="0.01" value="{{ transfer.price }}" required>
+      </div>
+      <div>
+        <label for="formFromAccount" class="form-label">From</label>
+        <select type="text" class="form-select" id="formFromAccount" required>
+          <option value="{{ transfer.from_account.name }}">{{ transfer.from_account.name }}</option>
+          {% for account in accounts %}
+            {% if not account.is_floating %}
+              <option value="{{ account.name }}">{{ account.name }} (account)</option>
+            {% elif account.is_floating and account.balance >= 0 %}
+              <option value="{{ account.name }}">{{ account.name }} (floating)</option>
+            {% else %}
+              <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="formToAccount" class="form-label">To</label>
+        <select type="text" class="form-select" id="formToAccount" required>
+          <option value="{{ transfer.to_account.name }}">{{ transfer.to_account.name }}</option>
+          {% for account in accounts %}
+            {% if not account.is_floating %}
+              <option value="{{ account.name }}">{{ account.name }} (account)</option>
+            {% elif account.is_floating and account.balance >= 0 %}
+              <option value="{{ account.name }}">{{ account.name }} (floating)</option>
+            {% else %}
+              <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="formTransferDate" class="form-label">Date</label>
+        <input type="date" class="form-control" id="formTransferDate" value="{{ date }}" required>
+      </div>
+    </form>
+  </div>
+{% endblock%}
+
+{% block script %}
+  <script src="{% static 'moneio/transfer.js' %}"></script>
+{% endblock %}

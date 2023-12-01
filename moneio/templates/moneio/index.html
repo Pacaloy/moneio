@@ -7,11 +7,13 @@
     <div>
       <button id="moneyInBtn">Money In</button>
       <button id="moneyOutBtn">Money Out</button>
+      <button id="transferMoneyBtn">Transfer Money</button>
     </div>
   
     <div>
       <button id="dashboardBtn">Dashboard</button>
       <button id="breakdownBtn">Transactions</button>
+      <button id="transfersBtn">Transfers</button>
     </div>
   
     <!-- Dashboard View-->
@@ -161,6 +163,32 @@
         </ul>
       </div>
     </div>
+
+    <!-- Transfers View -->
+    <div id="transfersView">
+
+      <!-- Transfers -->
+      <div>
+        <h2>Transfers</h2>
+        <ul class="list-group">
+          {% for transfer in data.transfers %}
+            <li class="list-group-item">
+              <a href="{% url 'edit_transfer' request.user.username transfer.id %}">
+                <span>{{ transfer.name }}</span>
+                <span>FROM: {{ transfer.from_account }}</span>
+                <span>TO: {{ transfer.to_account }}</span>
+                <span>{{ transfer.price }}</span>
+                <span>{{ transfer.date }}</span>
+              </a>
+            </li>
+          {% empty %}
+            <li class="list-group-item">
+              <span>empty</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
   </div>
 
   <!-- Add Account View -->
@@ -225,6 +253,68 @@
       <div>
         <label for="formMoneioDate" class="form-label">Date</label>
         <input type="date" class="form-control" id="formMoneioDate" required>
+      </div>
+    </form>
+  </div>
+
+  <!-- Transfer View -->
+  <div id="addTransferView">
+    <h2>Add Transfer View</h2>
+    <form id="form-transfer">
+      <div>
+        <button type="button" id="cancelAddTransferViewBtn">Cancel</button>
+        {% if data.accounts|length >= 2 %}
+          <button type="submit">Confirm</button>
+        {% endif %}
+      </div>
+      <div>
+        <label for="formTransferName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="formTransferName" required>
+      </div>
+      <div>
+        <label for="formTransferAmount" class="form-label">Amount</label>
+        <input type="number" class="form-control" id="formTransferAmount" min="0.01" step="0.01" required>
+      </div>
+      <div>
+        {% if data.accounts|length >= 2 %}
+          <div>
+            <label for="formFromAccount" class="form-label">From</label>
+            <select type="text" class="form-select" id="formFromAccount" required>
+              {% for account in data.accounts %}
+                {% if not account.is_floating %}
+                  <option value="{{ account.name }}">{{ account.name }} (account)</option>
+                {% elif account.is_floating and account.balance >= 0 %}
+                  <option value="{{ account.name }}">{{ account.name }} (floating)</option>
+                {% else %}
+                  <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="formToAccount" class="form-label">To</label>
+            <select type="text" class="form-select" id="formToAccount" required>
+              {% for account in data.accounts %}
+                {% if not account.is_floating %}
+                  <option value="{{ account.name }}">{{ account.name }} (account)</option>
+                {% elif account.is_floating and account.balance >= 0 %}
+                  <option value="{{ account.name }}">{{ account.name }} (floating)</option>
+                {% else %}
+                  <option value="{{ account.name }}">{{ account.name }} (deductibles)</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        {% else %}
+          <button type="button" id="createAccountBtn2">Create an account</button>
+        {% endif %}
+        <div>
+          <label for="formTransferDate" class="form-label">Date</label>
+          <input type="date" class="form-control" id="formTransferDate" required>
+        </div>
+      </div>
+      <div>
+
       </div>
     </form>
   </div>

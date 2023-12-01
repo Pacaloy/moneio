@@ -1,28 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#moneyInBtn').onclick = () => loadMoneio(true);
   document.querySelector('#moneyOutBtn').onclick = () => loadMoneio(false);
+  document.querySelector('#transferMoneyBtn').onclick = loadAddTransfer;
 
   // Use buttons to toggle between views
   document.querySelector('#dashboardBtn').onclick = loadDashboard;
   document.querySelector('#breakdownBtn').onclick = loadBreakdown;
+  document.querySelector('#transfersBtn').onclick = loadTransfers;
 
-  if (sessionStorage.getItem('display') === 'transactions') {
-    loadBreakdown();
-  } else {
-    // By default, load the dashboard
-    loadDashboard();
+  switch(sessionStorage.getItem('display')) {
+    case 'dashboard':
+      loadDashboard();
+      break;
+    case 'transactions':
+      loadBreakdown();
+      break;
+    case 'transfers':
+      loadTransfers();
+      break;
+    default:
+      loadDashboard();
   }
 });
 
 function loadDashboard() {
   sessionStorage.setItem('display', 'dashboard');
 
-  // View dashboard and hide breakdown
+  // View dashboard and hide breakdown and transfers
   document.querySelector('#defaultView').style.display = 'block';
   document.querySelector('#dashboardView').style.display = 'block';
   document.querySelector('#breakdownView').style.display = 'none';
+  document.querySelector('#transfersView').style.display = 'none';
   document.querySelector('#addAccountView').style.display = 'none';
   document.querySelector('#moneioView').style.display = 'none';
+  document.querySelector('#addTransferView').style.display = 'none';
 
   document.querySelector('#addAccountBtn').onclick = () => loadAddAccount(false);
   document.querySelector('#addFloatingBtn').onclick = () => loadAddAccount(true);
@@ -32,11 +43,25 @@ function loadDashboard() {
 function loadBreakdown() {
   sessionStorage.setItem('display', 'transactions');
 
-  // View breakdown and hide dashboard
+  // View breakdown and hide dashboard and transfers
   document.querySelector('#dashboardView').style.display = 'none';
   document.querySelector('#breakdownView').style.display = 'block';
+  document.querySelector('#transfersView').style.display = 'none';
   document.querySelector('#addAccountView').style.display = 'none';
   document.querySelector('#moneioView').style.display = 'none';
+  document.querySelector('#addTransferView').style.display = 'none';
+}
+
+function loadTransfers() {
+  sessionStorage.setItem('display', 'transfers');
+
+  // View transfers and hide dashboard and breakdown
+  document.querySelector('#dashboardView').style.display = 'none';
+  document.querySelector('#breakdownView').style.display = 'none';
+  document.querySelector('#transfersView').style.display = 'block';
+  document.querySelector('#addAccountView').style.display = 'none';
+  document.querySelector('#moneioView').style.display = 'none';
+  document.querySelector('#addTransferView').style.display = 'none';
 }
 
 function loadAddAccount(isFloating = false, isDeductibles = false) {
@@ -114,6 +139,48 @@ function loadMoneio(isMoneyIn) {
         account: document.querySelector('#formMoneioAccount').value,
         date: document.querySelector('#formMoneioDate').value,
         isMoneyIn: isMoneyIn,
+      }),
+    })
+    .then(() => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 300)
+    });
+
+    return false;
+  };
+}
+
+function loadAddTransfer() {
+
+  // View transfer and hide default view
+  document.querySelector('#defaultView').style.display = 'none';
+  document.querySelector('#addTransferView').style.display = 'block';
+
+  // Close button to return to default view
+  document.querySelector('#cancelAddTransferViewBtn').onclick = () => {
+    document.querySelector('#defaultView').style.display = 'block';
+    document.querySelector('#addTransferView').style.display = 'none';
+  };
+
+  // Go to dashboard to create new account
+  if (document.querySelector('#createAccountBtn2')) document.querySelector('#createAccountBtn2').onclick = loadDashboard;
+
+  // Assign default date today
+  document.querySelector('#formTransferDate').value = getFormattedDateToday();
+
+  // Confirm to add new transfer
+  document.querySelector('#form-transfer').onsubmit = () => {
+
+    // Add money in/money out
+    fetch('/transfer', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: document.querySelector('#formTransferName').value,
+        price: document.querySelector('#formTransferAmount').value,
+        fromAccount: document.querySelector('#formFromAccount').value,
+        toAccount: document.querySelector('#formToAccount').value,
+        date: document.querySelector('#formTransferDate').value,
       }),
     })
     .then(() => {

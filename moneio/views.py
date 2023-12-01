@@ -6,7 +6,7 @@ from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Account, MoneyInOut
+from .models import User, Account, MoneyInOut, Transfer
 
 
 def authenticate_index(func):
@@ -15,17 +15,26 @@ def authenticate_index(func):
     # Authenticated users view their dashboard
     if request.user.is_authenticated:
 
-      # Get list of user's accounts alphabetically and money in/money out reverse chronologically
+      # Get list of user's accounts, money in/money out, and transfers 
       accounts = Account.objects.filter(user = request.user).order_by("name")
       breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
+      transfers = Transfer.objects.filter(user = request.user).order_by("-date")
       accounts = [account.serialize() for account in accounts]
       breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+      transfers = [transfer.serialize() for transfer in transfers]
 
       # Calculate current balance for each account
       for breakdown in breakdowns:
         for account in accounts:
           if account["name"] == breakdown["account"]:
             account["balance"] += breakdown["price"]
+      for transfer in transfers:
+        for account in accounts:
+          if account["name"] == transfer["from_account"]:
+            account["balance"] -= transfer["price"]
+        for account in accounts:
+          if account["name"] == transfer["to_account"]:
+            account["balance"] += transfer["price"]
 
       # Calculate current overall total balances
       current_total_balance = 0
@@ -51,6 +60,7 @@ def authenticate_index(func):
         "data": {
           "accounts": accounts,
           "breakdowns": breakdowns,
+          "transfers": transfers,
           "current_total_balance": current_total_balance,
           "current_total_floating": current_total_floating,
           "current_total_gross": current_total_gross,
@@ -160,17 +170,26 @@ def moneio(request):
     if not data.get("isMoneyIn"):
       signed_price = signed_price * (-1)
 
-    # Get list of user's accounts and money in/money out
-    accounts = Account.objects.filter(user = request.user)
-    breakdowns = MoneyInOut.objects.filter(user = request.user)
+    # Get list of user's accounts, money in/money out, and transfers
+    accounts = Account.objects.filter(user = request.user).order_by("name")
+    breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
+    transfers = Transfer.objects.filter(user = request.user).order_by("-date")
     accounts = [account.serialize() for account in accounts]
     breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+    transfers = [transfer.serialize() for transfer in transfers]
 
     # Calculate current balance for each account
     for breakdown in breakdowns:
       for account in accounts:
         if account["name"] == breakdown["account"]:
           account["balance"] += breakdown["price"]
+    for transfer in transfers:
+      for account in accounts:
+        if account["name"] == transfer["from_account"]:
+          account["balance"] -= transfer["price"]
+      for account in accounts:
+        if account["name"] == transfer["to_account"]:
+          account["balance"] += transfer["price"]
 
     # Reverse sign if account chosen is a deductibles account
     for account in accounts:
@@ -234,17 +253,26 @@ def monei(request, username, monei_id):
   if not transaction:
     return HttpResponseRedirect(reverse("index"))
 
-  # Get list of user's accounts alphabetically and money in/money out reverse chronologically
+  # Get list of user's accounts, money in/money out, and transfers
   accounts = Account.objects.filter(user = request.user).order_by("name")
   breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
+  transfers = Transfer.objects.filter(user = request.user).order_by("-date")
   accounts = [account.serialize() for account in accounts]
   breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+  transfers = [transfer.serialize() for transfer in transfers]
 
   # Calculate current balance for each account
   for breakdown in breakdowns:
     for account in accounts:
       if account["name"] == breakdown["account"]:
         account["balance"] += breakdown["price"]
+  for transfer in transfers:
+    for account in accounts:
+      if account["name"] == transfer["from_account"]:
+        account["balance"] -= transfer["price"]
+    for account in accounts:
+      if account["name"] == transfer["to_account"]:
+        account["balance"] += transfer["price"]
 
   # Edit transaction details
   if request.method == "PUT":
@@ -293,17 +321,26 @@ def moneo(request, username, moneo_id):
   if not transaction:
     return HttpResponseRedirect(reverse("index"))
 
-  # Get list of user's accounts alphabetically and money in/money out reverse chronologically
+  # Get list of user's accounts, money in/money out, and transfers
   accounts = Account.objects.filter(user = request.user).order_by("name")
   breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
+  transfers = Transfer.objects.filter(user = request.user).order_by("-date")
   accounts = [account.serialize() for account in accounts]
   breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+  transfers = [transfer.serialize() for transfer in transfers]
 
   # Calculate current balance for each account
   for breakdown in breakdowns:
     for account in accounts:
       if account["name"] == breakdown["account"]:
         account["balance"] += breakdown["price"]
+  for transfer in transfers:
+    for account in accounts:
+      if account["name"] == transfer["from_account"]:
+        account["balance"] -= transfer["price"]
+    for account in accounts:
+      if account["name"] == transfer["to_account"]:
+        account["balance"] += transfer["price"]
 
   # Edit transaction details
   if request.method == "PUT":
@@ -336,5 +373,83 @@ def moneo(request, username, moneo_id):
     "transaction": transaction[0],
     "price": transaction[0].price * (-1), # Convert to positive for display
     "date": transaction[0].date.strftime("%Y-%m-%d"),
+    "accounts": accounts,
+  })
+
+
+@csrf_exempt
+@login_required
+def transfer(request):
+
+  # Add transfer
+  if request.method == "POST":
+    data = json.loads(request.body)
+    
+    # Add new transfer
+    new_transfer = Transfer(
+      user = request.user,
+      name = data.get("name"),
+      price = data.get("price"),
+      from_account = Account.objects.get(user = request.user, name = data.get("fromAccount")),
+      to_account = Account.objects.get(user = request.user, name = data.get("toAccount")),
+      date = data.get("date"),
+    )
+    new_transfer.save()
+    return HttpResponse(status = 204)
+  return HttpResponseRedirect(reverse("index"))
+
+
+@csrf_exempt
+@login_required
+def edit_transfer(request, username, transfer_id):
+
+  # Check if param is the current logged in user
+  if (request.user.username != username):
+    return HttpResponseRedirect(reverse("index"))
+  
+  # Check if the logged in user owns the transfer
+  current_transfer = Transfer.objects.filter(pk = transfer_id, user = request.user)
+  if not current_transfer:
+    return HttpResponseRedirect(reverse("index"))
+  
+  # Get list of user's accounts, money in/money out, and transfers
+  accounts = Account.objects.filter(user = request.user).order_by("name")
+  breakdowns = MoneyInOut.objects.filter(user = request.user).order_by("-date")
+  transfers = Transfer.objects.filter(user = request.user).order_by("-date")
+  accounts = [account.serialize() for account in accounts]
+  breakdowns = [breakdown.serialize() for breakdown in breakdowns]
+  transfers = [transfer.serialize() for transfer in transfers]
+
+  # Calculate current balance for each account
+  for breakdown in breakdowns:
+    for account in accounts:
+      if account["name"] == breakdown["account"]:
+        account["balance"] += breakdown["price"]
+  for transfer in transfers:
+    for account in accounts:
+      if account["name"] == transfer["from_account"]:
+        account["balance"] -= transfer["price"]
+    for account in accounts:
+      if account["name"] == transfer["to_account"]:
+        account["balance"] += transfer["price"]
+
+  # Edit transfer
+  if request.method == "PUT":
+    data = json.loads(request.body)
+    current_transfer[0].name = data.get("name")
+    current_transfer[0].price = data.get("price")
+    current_transfer[0].from_account = Account.objects.get(user = request.user, name = data.get("fromAccount"))
+    current_transfer[0].to_account = Account.objects.get(user = request.user, name = data.get("toAccount"))
+    current_transfer[0].date = data.get("date")
+    current_transfer[0].save()
+    return HttpResponse(status = 204)
+  
+  # Delete transfer
+  if request.method == "DELETE":
+    current_transfer[0].delete()
+    return HttpResponse(status = 204)
+  return render(request, "moneio/transfer.html", {
+    "transfer": current_transfer[0],
+    "date": current_transfer[0].date.strftime("%Y-%m-%d"),
     "accounts": accounts,
   })

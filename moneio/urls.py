@@ -14,4 +14,6 @@ urlpatterns = [
   path("moneio", views.moneio, name="moneio"),
   path("<str:username>/monei/<int:monei_id>", views.monei, name="monei"),
   path("<str:username>/moneo/<int:moneo_id>", views.moneo, name="moneo"),
+  path("transfer", views.transfer, name="transfer"),
+  path("<str:username>/transfer/<int:transfer_id>", views.edit_transfer, name="edit_transfer"),
 ]
