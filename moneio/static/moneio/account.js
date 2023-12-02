@@ -25,6 +25,7 @@ function saveEditAccount(params) {
       name: document.querySelector('#formAccountName').value,
       balance: document.querySelector('#formAccountInitialBalance').value,
       date: document.querySelector('#formAccountDate').value,
+      isFloating: document.querySelector('#formIsFloatingCheckbox').checked,
     }),
   })
   .then(() => {

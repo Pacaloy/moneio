@@ -25,6 +25,14 @@
         <label for="formAccountDate" class="form-label">Date</label>
         <input type="date" class="form-control" id="formAccountDate" value="{{ date }}" required>
       </div>
+      <div>
+        <label for="formIsFloatingCheckbox" class="form-label">Floating Account</label>
+        {% if account.is_floating %}
+          <input type="checkbox" id="formIsFloatingCheckbox" checked>
+        {% else %}
+          <input type="checkbox" id="formIsFloatingCheckbox">
+        {% endif %}
+      </div>
     </form>
   </div>
 {% endblock%}

@@ -228,6 +228,7 @@ def edit_account(request, username, account_id):
     account[0].name = data.get("name")
     account[0].initial_balance = data.get("balance")
     account[0].initial_balance_date = data.get("date")
+    account[0].is_floating = data.get("isFloating")
     account[0].save()
     return HttpResponse(status = 204)
 
