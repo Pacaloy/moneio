@@ -1,31 +1,34 @@
 {% extends "moneio/layout.html" %}
 {% load static %}
 
+{% block styles %}
+  <link href="{% static 'moneio/account.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
-  <h2>Account</h2>
 
   <!-- Edit Account View -->
-  <div>
+  <div id="editAccountView">
     <h2>Edit Account</h2>
     <form id="form-account">
-      <div>
-        <button type="button" id="cancelEditAccountBtn">Cancel</button>
-        <button type="submit">Save</button>
-        <button type="button" id="deleteAccountBtn">Delete</button>
+      <div class="mt-2">
+        <button type="button" id="cancelEditAccountBtn" class="btn btn-danger btn-sm">Cancel</button>
+        <button type="submit" class="btn btn-success btn-sm mx-1">Save</button>
+        <button type="button" id="deleteAccountBtn" class="btn btn-warning btn-sm">Delete</button>
       </div>
-      <div>
-        <label for="formAccountName" class="form-label">Name</label>
+      <div class="mt-2">
+        <label for="formAccountName" class="form-label">Name:</label>
         <input type="text" class="form-control" id="formAccountName" value="{{ account.name }}" required>
       </div>
-      <div>
-        <label for="formAccountInitialBalance" class="form-label">Initial Balance</label>
+      <div class="mt-2">
+        <label for="formAccountInitialBalance" class="form-label">Initial Balance:</label>
         <input type="number" class="form-control" id="formAccountInitialBalance" step="0.01" value="{{ account.initial_balance }}" required>
       </div>
-      <div>
-        <label for="formAccountDate" class="form-label">Date</label>
+      <div class="mt-2">
+        <label for="formAccountDate" class="form-label">Date:</label>
         <input type="date" class="form-control" id="formAccountDate" value="{{ date }}" required>
       </div>
-      <div>
+      <div class="mt-2">
         <label for="formIsFloatingCheckbox" class="form-label">Floating Account</label>
         {% if account.is_floating %}
           <input type="checkbox" id="formIsFloatingCheckbox" checked>

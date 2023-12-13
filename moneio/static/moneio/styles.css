@@ -1,0 +1,31 @@
+body {
+  background-color: #000000;
+}
+
+.app {
+  max-width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1 a{
+  color: #FFFFFF;
+  text-decoration: none;
+  margin-left: 0.5rem;
+}
+
+h2 {
+  color: #FFFFFF;
+}
+
+.header {
+  display: flex;
+}
+
+.header h1 {
+  margin-right: auto;
+}
+
+.username {
+  color: #FFFFFF;
+}

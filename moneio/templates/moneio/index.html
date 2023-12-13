@@ -1,16 +1,20 @@
 {% extends "moneio/layout.html" %}
 {% load static %}
 
+{% block styles %}
+  <link href="{% static 'moneio/index.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
   <!-- Default View -->
   <div id="defaultView">
-    <div>
-      <button id="moneyInBtn">Money In</button>
-      <button id="moneyOutBtn">Money Out</button>
-      <button id="transferMoneyBtn">Transfer Money</button>
+    <div class="mainControls">
+      <button id="moneyInBtn"><strong>+</strong></button>
+      <button id="transferMoneyBtn"><strong>←→</strong></button>
+      <button id="moneyOutBtn"><strong>-</strong></button>
     </div>
   
-    <div>
+    <div class="mainViews">
       <button id="dashboardBtn">Dashboard</button>
       <button id="breakdownBtn">Transactions</button>
       <button id="transfersBtn">Transfers</button>
@@ -23,23 +27,25 @@
       <div>
         <h2>Accounts</h2>
         <ul class="list-group">
-          <li class="list-group-item">
+          <li class="list-group-item list-group-item-dark">
             <button id="addAccountBtn">Add Account</button>
           </li>
           {% for account in data.accounts %}
             {% if not account.is_floating %}
-              <li class="list-group-item">
+              <li class="list-group-item list-group-item-dark">
                 <!-- <a href="/{{ request.user.username }}/account/{{ account.id }}"> -->
-                <a href="{% url 'edit_account' request.user.username account.id %}">
-                  <span>{{ account.name }}</span>
-                  <span>{{ account.balance }}</span>
+                <a href="{% url 'edit_account' request.user.username account.id %}" class="accountRow">
+                  <span class="accountName">{{ account.name }}</span>
+                  <span class="accountBalance">{{ account.balance }}</span>
                 </a>
               </li>
             {% endif %}
           {% endfor %}
-          <li class="list-group-item">
-            <span>Total</span>
-            <span>{{ data.current_total_balance }}</span>
+          <li class="list-group-item list-group-item-dark">
+            <strong>
+              <span>Total:</span>
+              <span>{{ data.current_total_balance }}</span>
+            </strong>
           </li>
         </ul>
       </div>
@@ -48,23 +54,25 @@
       <div>
         <h2>Floating</h2>
         <ul class="list-group">
-          <li class="list-group-item">
+          <li class="list-group-item list-group-item-dark">
             <button id="addFloatingBtn">Add Floating Account</button>
           </li>
           {% for account in data.accounts %}
             {% if account.is_floating and account.balance >= 0 %}
-              <li class="list-group-item">
+              <li class="list-group-item list-group-item-dark">
                 <!-- <a href="/{{ request.user.username }}/account/{{ account.id }}"> -->
-                <a href="{% url 'edit_account' request.user.username account.id %}">
-                  <span>{{ account.name }}</span>
-                  <span>{{ account.balance }}</span>
+                <a href="{% url 'edit_account' request.user.username account.id %}" class="accountRow">
+                  <span class="accountName">{{ account.name }}</span>
+                  <span class="accountBalance">{{ account.balance }}</span>
                 </a>
               </li>
             {% endif %}
           {% endfor %}
-          <li class="list-group-item">
-            <span>Total</span>
-            <span>{{ data.current_total_floating }}</span>
+          <li class="list-group-item list-group-item-dark">
+            <strong>
+              <span>Total:</span>
+              <span>{{ data.current_total_floating }}</span>
+            </strong>
           </li>
         </ul>
       </div>
@@ -73,9 +81,11 @@
       <div>
         <h2>Gross</h2>
         <ul class="list-group">
-          <li class="list-group-item">
-            <span>Total</span>
-            <span>{{ data.current_total_gross }}</span>
+          <li class="list-group-item list-group-item-dark">
+            <strong>
+              <span>Total:</span>
+              <span>{{ data.current_total_gross }}</span>
+            </strong>
           </li>
         </ul>
       </div>
@@ -84,23 +94,25 @@
       <div>
         <h2>Deductibles</h2>
         <ul class="list-group">
-          <li class="list-group-item">
+          <li class="list-group-item list-group-item-dark">
             <button id="addDeductiblesBtn">Add Deductibles Account</button>
           </li>
           {% for account in data.accounts %}
             {% if account.is_floating and account.balance < 0 %}
-              <li class="list-group-item">
+              <li class="list-group-item list-group-item-dark">
                 <!-- <a href="/{{ request.user.username }}/account/{{ account.id }}"> -->
-                <a href="{% url 'edit_account' request.user.username account.id %}">
-                  <span>{{ account.name }}</span>
-                  <span>{% widthratio account.balance 1 -1 %}</span>
+                <a href="{% url 'edit_account' request.user.username account.id %}" class="accountRow">
+                  <span class="accountName">{{ account.name }}</span>
+                  <span class="accountBalance">{% widthratio account.balance 1 -1 %}</span>
                 </a>
               </li>
             {% endif %}
           {% endfor %}
-          <li class="list-group-item">
-            <span>Total</span>
-            <span>{{ data.current_total_deductibles }}</span>
+          <li class="list-group-item list-group-item-dark">
+            <strong>
+              <span>Total:</span>
+              <span>{{ data.current_total_deductibles }}</span>
+            </strong>
           </li>
         </ul>
       </div>
@@ -109,9 +121,11 @@
       <div>
         <h2>Net</h2>
         <ul class="list-group">
-          <li class="list-group-item">
-            <span>Total</span>
-            <span>{{ data.current_total_net }}</span>
+          <li class="list-group-item list-group-item-dark">
+            <strong>
+              <span>Total:</span>
+              <span>{{ data.current_total_net }}</span>
+            </strong>
           </li>
         </ul>
       </div>
@@ -120,9 +134,11 @@
       <div>
         <h2>Onhand</h2>
         <ul class="list-group">
-          <li class="list-group-item">
-            <span>Total</span>
-            <span>{{ data.current_total_onhand }}</span>
+          <li class="list-group-item list-group-item-dark">
+            <strong>
+              <span>Total:</span>
+              <span>{{ data.current_total_onhand }}</span>
+            </strong>
           </li>
         </ul>
       </div>
@@ -134,29 +150,38 @@
       <!-- Breakdown -->
       <div>
         <h2>Transactions</h2>
-        <ul class="list-group">
+        <ul class="breakdowns list-group">
           {% for breakdown in data.breakdowns %}
             {% if breakdown.price >= 0 %}
               <li class="list-group-item bg-success-subtle">
-                <a href="{% url 'monei' request.user.username breakdown.id %}">
-                  <span>{{ breakdown.account }}</span>
-                  <span>{{ breakdown.name }}</span>
-                  <span>{{ breakdown.price }}</span>
-                  <span>{{ breakdown.date }}</span>
+                <a href="{% url 'monei' request.user.username breakdown.id %}" class="breakdown">
+                  <span class="breakdownDate">{{ breakdown.date }}</span>
+                  <div class="d-flex">
+                    <div class="d-flex flex-column">
+                      <span class="breakdownAccount">{{ breakdown.account }}</span>
+                      <span class="breakdownName">{{ breakdown.name }}</span>
+                    </div>
+                    <div></div>
+                    <span class="breakdownAmount">{{ breakdown.price }}</span>
+                  </div>
                 </a>
               </li>
             {% else %}
               <li class="list-group-item bg-danger-subtle">
-                <a href="{% url 'moneo' request.user.username breakdown.id %}">
-                  <span>{{ breakdown.account }}</span>
-                  <span>{{ breakdown.name }}</span>
-                  <span>{% widthratio breakdown.price 1 -1 %}</span>
-                  <span>{{ breakdown.date }}</span>
+                <a href="{% url 'moneo' request.user.username breakdown.id %}" class="breakdown">
+                  <span class="breakdownDate">{{ breakdown.date }}</span>
+                  <div class="d-flex">
+                    <div class="d-flex flex-column">
+                      <span class="breakdownAccount">{{ breakdown.account }}</span>
+                      <span class="breakdownName">{{ breakdown.name }}</span>
+                    </div>
+                    <span class="breakdownAmount">{% widthratio breakdown.price 1 -1 %}</span>
+                  </div>
                 </a>
               </li>
             {% endif %}
           {% empty %}
-            <li class="list-group-item">
+            <li class="list-group-item list-group-item-dark">
               <span>empty</span>
             </li>
           {% endfor %}
@@ -172,17 +197,23 @@
         <h2>Transfers</h2>
         <ul class="list-group">
           {% for transfer in data.transfers %}
-            <li class="list-group-item">
-              <a href="{% url 'edit_transfer' request.user.username transfer.id %}">
-                <span>{{ transfer.name }}</span>
-                <span>FROM: {{ transfer.from_account }}</span>
-                <span>TO: {{ transfer.to_account }}</span>
-                <span>{{ transfer.price }}</span>
-                <span>{{ transfer.date }}</span>
+            <li class="list-group-item list-group-item-dark">
+              <a href="{% url 'edit_transfer' request.user.username transfer.id %}" class="transfer">
+                <span class="transferDate">{{ transfer.date }}</span>
+                <div class="d-flex align-items-end">
+                  <div>
+                    <span class="transferName">{{ transfer.name }}</span>
+                    <div class="d-flex flex-column">
+                      <span class="transferFrom">from {{ transfer.from_account }}</span>
+                      <span class="transferTo">to {{ transfer.to_account }}</span>
+                    </div>
+                  </div>
+                  <span class="transferAmount">{{ transfer.price }}</span>
+                </div>
               </a>
             </li>
           {% empty %}
-            <li class="list-group-item">
+            <li class="list-group-item list-group-item-dark">
               <span>empty</span>
             </li>
           {% endfor %}
@@ -193,22 +224,22 @@
 
   <!-- Add Account View -->
   <div id="addAccountView">
-    <h2>Add Account View</h2>
+    <h2>Add Account</h2>
     <form id="form-account">
-      <div>
-        <button type="button" id="cancelAddAccountViewBtn">Cancel</button>
-        <button type="submit">Confirm</button>
+      <div class="mt-2">
+        <button type="button" id="cancelAddAccountViewBtn" class="btn btn-danger btn-sm">Cancel</button>
+        <button type="submit" class="btn btn-success btn-sm mx-1">Confirm</button>
       </div>
-      <div>
-        <label for="formAccountName" class="form-label">Name</label>
+      <div class="mt-2">
+        <label for="formAccountName" class="form-label">Name:</label>
         <input type="text" class="form-control" id="formAccountName" required>
       </div>
-      <div>
-        <label for="formAccountInitialBalance" class="form-label">Initial Balance</label>
+      <div class="mt-2">
+        <label for="formAccountInitialBalance" class="form-label">Initial Balance:</label>
         <input type="number" class="form-control" id="formAccountInitialBalance" min="0" step="0.01" required>
       </div>
-      <div>
-        <label for="formAccountDate" class="form-label">Date</label>
+      <div class="mt-2">
+        <label for="formAccountDate" class="form-label">Date:</label>
         <input type="date" class="form-control" id="formAccountDate" required>
       </div>
     </form>
@@ -216,25 +247,25 @@
 
   <!-- Money In/ Money Out View -->
   <div id="moneioView">
-    <h2>Moneio View</h2>
+    <h2>Moneio</h2>
     <form id="form-moneio">
-      <div>
-        <button type="button" id="cancelMoneioViewBtn">Cancel</button>
+      <div class="mt-2">
+        <button type="button" id="cancelMoneioViewBtn" class="btn btn-danger btn-sm">Cancel</button>
         {% if data.accounts %}
-          <button type="submit">Confirm</button>
+          <button type="submit" class="btn btn-success btn-sm mx-1">Confirm</button>
         {% endif %}
       </div>
-      <div>
-        <label for="formMoneioName" class="form-label">Name</label>
+      <div class="mt-2">
+        <label for="formMoneioName" class="form-label">Name:</label>
         <input type="text" class="form-control" id="formMoneioName" required>
       </div>
-      <div>
+      <div class="mt-2">
         <label id="moneioMoneyLabel" for="formMoneioMoney" class="form-label"></label>
         <input type="number" class="form-control" id="formMoneioMoney" min="0.01" step="0.01" required>
       </div>
-      <div>
+      <div class="mt-2">
         {% if data.accounts %}
-          <label for="formMoneioAccount" class="form-label">Account</label>
+          <label for="formMoneioAccount" class="form-label">Account:</label>
           <select type="text" class="form-select" id="formMoneioAccount" required>
             {% for account in data.accounts %}
               {% if not account.is_floating %}
@@ -247,11 +278,11 @@
             {% endfor %}
           </select>
         {% else %}
-          <button type="button" id="createAccountBtn">Create an account</button>
+          <button type="button" id="createAccountBtn" class="btn btn-info btn-sm mt-2">Create an account</button>
         {% endif %}
       </div>
-      <div>
-        <label for="formMoneioDate" class="form-label">Date</label>
+      <div class="mt-2">
+        <label for="formMoneioDate" class="form-label">Date:</label>
         <input type="date" class="form-control" id="formMoneioDate" required>
       </div>
     </form>
@@ -259,26 +290,26 @@
 
   <!-- Transfer View -->
   <div id="addTransferView">
-    <h2>Add Transfer View</h2>
+    <h2>Add Transfer</h2>
     <form id="form-transfer">
-      <div>
-        <button type="button" id="cancelAddTransferViewBtn">Cancel</button>
+      <div class="mt-2">
+        <button type="button" id="cancelAddTransferViewBtn" class="btn btn-danger btn-sm">Cancel</button>
         {% if data.accounts|length >= 2 %}
-          <button type="submit">Confirm</button>
+          <button type="submit" class="btn btn-success btn-sm mx-1">Confirm</button>
         {% endif %}
       </div>
-      <div>
-        <label for="formTransferName" class="form-label">Name</label>
+      <div class="mt-2">
+        <label for="formTransferName" class="form-label">Name:</label>
         <input type="text" class="form-control" id="formTransferName" required>
       </div>
-      <div>
-        <label for="formTransferAmount" class="form-label">Amount</label>
+      <div class="mt-2">
+        <label for="formTransferAmount" class="form-label">Amount:</label>
         <input type="number" class="form-control" id="formTransferAmount" min="0.01" step="0.01" required>
       </div>
       <div>
         {% if data.accounts|length >= 2 %}
-          <div>
-            <label for="formFromAccount" class="form-label">From</label>
+          <div class="mt-2">
+            <label for="formFromAccount" class="form-label">From:</label>
             <select type="text" class="form-select" id="formFromAccount" required>
               {% for account in data.accounts %}
                 {% if not account.is_floating %}
@@ -291,8 +322,8 @@
               {% endfor %}
             </select>
           </div>
-          <div>
-            <label for="formToAccount" class="form-label">To</label>
+          <div class="mt-2">
+            <label for="formToAccount" class="form-label">To:</label>
             <select type="text" class="form-select" id="formToAccount" required>
               {% for account in data.accounts %}
                 {% if not account.is_floating %}
@@ -306,15 +337,14 @@
             </select>
           </div>
         {% else %}
-          <button type="button" id="createAccountBtn2">Create an account</button>
+          <div class="mt-2">
+            <button type="button" id="createAccountBtn2" class="btn btn-info btn-sm mt-2">Create an account</button>
+          </div>
         {% endif %}
-        <div>
-          <label for="formTransferDate" class="form-label">Date</label>
+        <div class="mt-2">
+          <label for="formTransferDate" class="form-label">Date:</label>
           <input type="date" class="form-control" id="formTransferDate" required>
         </div>
-      </div>
-      <div>
-
       </div>
     </form>
   </div>

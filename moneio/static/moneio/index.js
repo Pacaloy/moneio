@@ -106,9 +106,9 @@ function loadMoneio(isMoneyIn) {
   
   // Money label
   if (isMoneyIn) {
-    document.querySelector('#moneioMoneyLabel').innerHTML = 'Money In'
+    document.querySelector('#moneioMoneyLabel').innerHTML = 'Money In:';
   } else {
-    document.querySelector('#moneioMoneyLabel').innerHTML = 'Money Out'
+    document.querySelector('#moneioMoneyLabel').innerHTML = 'Money Out:';
   }
 
   // View moneio view and hide default view

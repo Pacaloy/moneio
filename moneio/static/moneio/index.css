@@ -1,0 +1,146 @@
+.mainControls {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  z-index: 1;
+}
+
+.mainControls button {
+  width: 3rem;
+  height: 3rem;
+  font-size: 2rem;
+  line-height: 2rem;
+  border-radius: 1rem;
+}
+
+.mainControls #moneyInBtn {
+  color: #639C7C;
+  border: 5px solid #639C7C;
+}
+
+.mainControls #transferMoneyBtn {
+  width: 5rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  color: #28C4D5;
+  border: 5px solid #28C4D5;
+}
+
+.mainControls #moneyOutBtn {
+  color: #E94242;
+  border: 5px solid #E94242;
+}
+
+#defaultView {
+  padding-bottom: 5rem;
+}
+
+.mainViews {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.mainViews button {
+  border: none;
+  border-radius: 0.5rem;
+  color: #FFFFFF;
+  background-color: #1C1C1E;
+}
+
+#dashboardView,
+#breakdownView,
+#transfersView,
+#addAccountView,
+#moneioView,
+#addTransferView {
+  margin: 1rem;
+}
+
+#dashboardView h2 {
+  margin-top: 1rem;
+}
+
+#dashboardView button {
+  border: 3px solid #FFFFFF;
+  border-radius: 0.5rem;
+  color: #1C1C1E;
+}
+
+.accountRow {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.accountName {
+  color: #49497D;
+  font-size: 0.8rem;
+}
+
+.accountBalance {
+  color: #1C1C1E;
+  font-size: 1rem;
+}
+
+.breakdowns li {
+  border: 1px solid #1C1C1E;
+}
+
+.breakdown {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.breakdown .breakdownDate {
+  color: #49497D;
+  font-size: 0.8rem;
+}
+
+.breakdown .breakdownName,
+.breakdown .breakdownAccount {
+  color: #1C1C1E;
+  font-size: 0.9rem;
+}
+
+.breakdown .breakdownAmount {
+  color: #1C1C1E;
+  font-size: 1.5rem;
+  text-align: right;
+  margin-left: auto;
+}
+
+.transfer {
+  text-decoration: none;
+}
+
+.transfer .transferDate {
+  color: #49497D;
+  font-size: 0.8rem;
+}
+
+.transfer .transferName,
+.transfer .transferFrom,
+.transfer .transferTo {
+  color: #49497D;
+  font-size: 0.9rem;
+}
+
+.transfer .transferAmount {
+  color: #1C1C1E;
+  margin-left: auto;
+  font-size: 1.5rem;
+}
+
+
+#form-account label,
+#form-moneio label,
+#form-transfer label {
+  color: #FFFFFF;
+}

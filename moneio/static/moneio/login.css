@@ -1,0 +1,8 @@
+.loginBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  color: #666666;
+}
