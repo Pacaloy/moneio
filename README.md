@@ -1,5 +1,5 @@
 # moneio
-#### Video Demo:
+#### Video Demo: https://youtu.be/dLLyKA20Pgo
 
 A web application made using Django that tracks your money in your different money accounts through money in, money out, and money transfer.
 
