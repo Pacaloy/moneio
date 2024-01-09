@@ -3,18 +3,6 @@
 
 A web application made using Django that tracks your money in your different money accounts through money in, money out, and money transfer.
 
-## Distinctiveness and Complexity
-
-### Distinctiveness:
-Moneio and an ecommerce app both involve financial transactions but their primary objectives, user interactions, and functionalities differ significantly. Moneio is geared towards helping users manage their finances, while an ecommerce app is focused on facilitating the buying and selling of products or services.
-
-### Complexity:
-Moneio handles various types of financial transactions, and users may input data in different methods.
-
-This app helps users monitor and keep track of their money by categorizing and organizing each transactions in reverse chronological way.
-
-The app requires the user to input data about their money accounts, such as the account's name, initial balance, and initial balance date. And also the user's every financial transaction such as the transaction name, transaction amount, and transaction date. This lets the application to calculate and keep track of the user's current financial standing that will be reflected on the app's dashboard.
-
 ## Description
 You need to register or login if you already have an account to input your data to the application. The application have three main views namely, the dashboard, the transactions, and the transfers which will all be initially empty.
 
